@@ -771,6 +771,15 @@ There exists a workaround, however, when the original context does *not* need to
 Special Escaping Sequences
 --------------------------
 
+=================================
+特殊的转码格式：
+一些正则表达式的占位符表示特殊使用规则：
+（因为openresty中在运行之前需要lua和nginx的两次转义，所以需要特殊的转义）
+比如，对于想\d这种数字占位符
+不能正常的只写"\d+"这种，而是需要"\\\\d",因为在nginx配置文件转义后会变成"\\d"，接着在lua转义后变成"\d"即可进行运行
+或者可以使用[[\\d+]],因为[[\\d]]会直接被nginx配置转义一次后就可以了
+但是如果Regex语句含有[]那么就需要[=[...]=]这种方式了，比如[=[[0-9]+]=]
+
 **NOTE** Following the `v0.9.17` release, this pitfall can be avoided by using the `*_by_lua_block {}` configuration directives.
 
 PCRE sequences such as `\d`, `\s`, or `\w`, require special attention because in string literals, the backslash character, `\`, is stripped out by both the Lua language parser and by the Nginx config file parser before processing if not within a `*_by_lua_block {}` directive. So the following snippet will not work as expected:
